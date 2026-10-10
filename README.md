@@ -52,7 +52,7 @@ cd backend
 python -m venv venv
 venv\Scripts\activate        # Windows (macOS/Linux: source venv/bin/activate)
 pip install -r requirements.txt
-uvicorn app.main:app --reload
+fastapi dev app/main.py
 ```
 
 The API runs at http://127.0.0.1:8000 (interactive docs at `/docs`).
