@@ -18,6 +18,8 @@ export default function Dashboard() {
     checkHealth();
   }, []);
 
+  console.log("API URL:", import.meta.env.VITE_API_BASE_URL);
+
   return (
     <div>
       <h1>Dashboard</h1>
