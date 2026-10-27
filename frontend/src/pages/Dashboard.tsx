@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getHealth } from "../api/health";
 
 export default function Dashboard() {
   const [backendStatus, setBackendStatus] = useState("checking...");
@@ -6,8 +7,7 @@ export default function Dashboard() {
   useEffect(() => {
     async function checkHealth() {
       try {
-        const response = await fetch("http://127.0.0.1:8000/health");
-        const data = await response.json();
+        const data = await getHealth();
         setBackendStatus(data.status);
       } catch (error) {
         console.error("Health check failed:", error);
@@ -17,8 +17,6 @@ export default function Dashboard() {
 
     checkHealth();
   }, []);
-
-  console.log("API URL:", import.meta.env.VITE_API_BASE_URL);
 
   return (
     <div>
