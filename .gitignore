@@ -15,6 +15,7 @@ venv/
 .env.*
 !.env.example
 !frontend/.env.development
+!frontend/.env.test
 
 # --- Databases (local dev data, not source code) ---
 *.db
