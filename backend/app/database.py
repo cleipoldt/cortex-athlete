@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, event
+from sqlalchemy import MetaData, create_engine, event
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from app.config import get_database_url
@@ -24,6 +24,18 @@ if IS_SQLITE:
 # Factory that creates a new session (one per request).
 SessionLocal = sessionmaker(bind=engine, autoflush=False)
 
+# Every constraint gets a predictable name, identical on SQLite and PostgreSQL,
+# so future migrations can find it by name.
+NAMING_CONVENTION = {
+    "ix": "ix_%(column_0_label)s",
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s",
+}
+
 
 class Base(DeclarativeBase):
     """Parent class for every model. Alembic reads its registry of tables."""
+
+    metadata = MetaData(naming_convention=NAMING_CONVENTION)
