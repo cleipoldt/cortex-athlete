@@ -1,5 +1,7 @@
+from collections.abc import Iterator
+
 from sqlalchemy import MetaData, create_engine, event
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.config import get_database_url
 
@@ -11,18 +13,37 @@ connect_args = {"check_same_thread": False} if IS_SQLITE else {}
 
 engine = create_engine(DATABASE_URL, connect_args=connect_args)
 
-# SQLite ignores foreign keys unless every connection turns them on.
-if IS_SQLITE:
 
-    @event.listens_for(engine, "connect")
-    def enable_sqlite_foreign_keys(dbapi_connection, connection_record):
-        cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA foreign_keys=ON")
-        cursor.close()
+def enable_sqlite_foreign_keys(dbapi_connection, connection_record) -> None:
+    """Turn on foreign key enforcement for a new SQLite connection.
+
+    SQLite ignores foreign keys unless every connection opts in. This is a
+    named function (not tied to one engine) so the test engine can reuse it.
+    Deliberately NOT applied to Alembic's engine: SQLite migrations rebuild
+    tables by dropping them, and with foreign keys on, ON DELETE CASCADE
+    would wipe child rows during that rebuild.
+    """
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+
+
+if IS_SQLITE:
+    event.listen(engine, "connect", enable_sqlite_foreign_keys)
 
 
 # Factory that creates a new session (one per request).
 SessionLocal = sessionmaker(bind=engine, autoflush=False)
+
+
+def get_db() -> Iterator[Session]:
+    """FastAPI dependency: one database session per request, always closed."""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 # Every constraint gets a predictable name, identical on SQLite and PostgreSQL,
 # so future migrations can find it by name.

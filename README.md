@@ -58,12 +58,13 @@ python -m venv venv
 venv\Scripts\activate        # Windows (macOS/Linux: source venv/bin/activate)
 pip install -r requirements.txt
 alembic upgrade head         # create or update the database schema
+python -m app.seed           # create the dev user (id 1); safe to re-run
 fastapi dev app/main.py
 ```
 
 The API runs at http://127.0.0.1:8000 (interactive docs at `/docs`).
 
-**Database:** development uses a local SQLite file (`backend/cortex.db`, not committed). Run `alembic upgrade head` after cloning and whenever new migrations are pulled. To use a different database, set the `DATABASE_URL` environment variable.
+**Database:** development uses a local SQLite file (`backend/cortex.db`, not committed). Run `alembic upgrade head` after cloning and whenever new migrations are pulled, then `python -m app.seed` once to create the development user (until authentication is added, all data belongs to user 1). Tests never use this database: each test gets its own temporary SQLite file. To use a different database, set the `DATABASE_URL` environment variable.
 
 **Frontend** (in a second terminal)
 
