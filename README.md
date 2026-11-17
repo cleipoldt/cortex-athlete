@@ -29,10 +29,11 @@ The repo is a monorepo with isolated dependencies: `frontend/` (React app) and `
 - FastAPI backend with a `/health` endpoint and environment-based CORS configuration
 - Typed API client connecting the React frontend to the FastAPI backend, with HTTP error handling
 - Normalized database schema (users, cognitive sessions and trials, sport sessions, golf and volleyball performance) built with SQLAlchemy models and versioned Alembic migrations, with foreign keys enforced
-- Tests for the backend (pytest) and the API client (Vitest, using a mocked `fetch`)
+- Simple Reaction Time test in the browser: unpredictable 1.5–4.5 s delay, premature-click detection (clicks during the wait or responses under 100 ms), and summary stats (mean, median, fastest, slowest, SD) reported with the number of valid trials
+- Tests for the backend (pytest), the API client (Vitest, using a mocked `fetch`), and the reaction-time logic (Vitest, using fake timers and an injected clock so timing is tested deterministically)
 
 **Next**
-- Reaction-time test in the frontend
+- Saving reaction-time results to the database through the API
 
 ## Roadmap
 
@@ -40,7 +41,7 @@ The repo is a monorepo with isolated dependencies: `frontend/` (React app) and `
 - [x] FastAPI backend with health check and tests
 - [x] Connect frontend to backend (typed API client)
 - [x] Database schema (SQLAlchemy models, Alembic migrations)
-- [ ] Reaction-time cognitive test with accurate timing
+- [x] Reaction-time cognitive test with accurate timing
 - [ ] Session logging with persistent storage
 - [ ] Statistics layer: relate cognitive results to session performance
 - [ ] Dashboard charts
